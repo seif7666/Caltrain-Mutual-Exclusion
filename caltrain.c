@@ -18,30 +18,30 @@ void station_init(struct station *station){
 }
 
 void station_load_train(struct station *station, int count){
-  printf("//////////////////////Load Train///////////////////////////////////////\n" );
+  // printf("//////////////////////Load Train///////////////////////////////////////\n" );
   acquire(station , "Adding Train passengers");
   station->trainPassengers =count;
   station->enteredButNotBoarded = 0;
-  print_station(station);
+  // print_station(station);
   release(station , "Adding Train passengers");
   //Signal all threads.
 
   while(1){
       acquire(station , "Train loop");
-      print_station(station);
+      // print_station(station);
       pthread_cond_broadcast(&(station->cond));
-      printf("In Loop of loading train...\n");
+      // printf("In Loop of loading train...\n");
       if(station->trainPassengers > 0 && station->passengersWaiting>0 ){
         //wait on condition.
-        printf("Waiting for passengers to enter ...\n" );
+        // printf("Waiting for passengers to enter ...\n" );
         pthread_cond_wait(&(station->trainCond), &(station->lock));
-        printf("Train Signaled\n" );
+        // printf("Train Signaled\n" );
         release(station , "Train loop");
       }
       else if(station->enteredButNotBoarded !=0){
-        printf("Waiting for passengers to Boarding ...\n" );
+        // printf("Waiting for passengers to Boarding ...\n" );
         pthread_cond_wait(&(station->trainCond), &(station->lock));
-        printf("Train Signaled\n" );
+        // printf("Train Signaled\n" );
         release(station , "Train loop");
       }
       else{
@@ -54,7 +54,7 @@ void station_load_train(struct station *station, int count){
     station->trainPassengers = 0;
     // print_station(station);
     release(station,"Making Train Passengers = 0");
-    printf("////////////////Train exited///////////////////////////\n");
+    // printf("////////////////Train exited///////////////////////////\n");
 }
 
 void station_wait_for_train(struct station *station){
@@ -64,7 +64,7 @@ void station_wait_for_train(struct station *station){
   while(1){
     acquire(station , 0);//"Passenger checking for train");
     if(station->trainPassengers>0){
-      printf("Since remaining train passengers is %d\n",station->trainPassengers );
+      // printf("Since remaining train passengers is %d\n",station->trainPassengers );
       station->passengersWaiting--;
       station->trainPassengers--;
       station->enteredButNotBoarded++;
@@ -86,23 +86,23 @@ void station_on_board(struct station *station){
   //Signal Train.
   acquire(station , 0);
   station->enteredButNotBoarded--;
-  printf("Boarded are %d.\n",station->enteredButNotBoarded);
+  // printf("Boarded are %d.\n",station->enteredButNotBoarded);
   release(station , 0);
   pthread_cond_signal(&(station->trainCond));
 
 }
 
 void acquire(struct station *station , char* message){
-  if(message != 0)
-    printf("Acquired %s\n",message);
+  // if(message != 0)
+  // printf("Acquired %s\n",message);
 
   pthread_mutex_lock(&(station->lock));
-  if(message !=0)
-    printf("Critical %s\n",message);
+  // if(message !=0)
+  //   printf("Critical %s\n",message);
 
 }
 void release(struct station *station , char* message){
-  if(message !=0)
-    printf("Release %s\n",message);
+  // if(message !=0)
+  //   printf("Release %s\n",message);
   pthread_mutex_unlock(&(station->lock));
 }

@@ -4,6 +4,7 @@
 struct station {
   int passengersWaiting;
   int trainPassengers;
+  int enteredButNotBoarded;
   pthread_mutex_t lock; //Lock to ensure no race condition occurs.
   pthread_cond_t cond;
   pthread_cond_t trainCond;
